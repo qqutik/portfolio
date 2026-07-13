@@ -1,7 +1,7 @@
  .idea/
 
 ###> symfony/framework-bundle ###
-/backend/.env
+/backend/.env.local
 /backend/var/
 /backend/vendor/
 .env
