@@ -1,0 +1,63 @@
+services:
+  database:
+    image: postgres:17-alpine
+    container_name: portfolio_database
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-app}
+      POSTGRES_USER: ${POSTGRES_USER:-app}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-app}
+    volumes:
+      - database_data:/var/lib/postgresql/data
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-app} -d ${POSTGRES_DB:-app}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - portfolio
+
+  backend:
+    build:
+      context: ./backend
+    container_name: portfolio_backend
+    depends_on:
+      database:
+        condition: service_healthy
+    environment:
+      APP_ENV: ${APP_ENV:-dev}
+      APP_DEBUG: ${APP_DEBUG:-1}
+      APP_SECRET: ${APP_SECRET:-18fcfe1841597447313927bdcddd5a0c}
+      DATABASE_URL: "postgresql://${POSTGRES_USER:-app}:${POSTGRES_PASSWORD:-app}@database:5432/${POSTGRES_DB:-app}?serverVersion=17&charset=utf8"
+    volumes:
+      # Код монтується всередину контейнера — зміни в backend/ підхоплюються без перезбірки.
+      - ./backend:/app
+      # vendor лишаємо з образу (не перекриваємо хостовою текою).
+      - /app/vendor
+    ports:
+      - "${BACKEND_PORT:-8000}:80"
+    networks:
+      - portfolio
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: portfolio_frontend
+    depends_on:
+      - backend
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
+      # URL беку для звернень із SSR-сервера всередині мережі Docker
+      BACKEND_URL: "http://backend:80"
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
+    networks:
+      - portfolio
+
+volumes:
+  database_data:
+
+networks:
+  portfolio:
+    driver: bridge

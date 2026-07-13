@@ -1,10 +1,21 @@
+ .idea/
 
 ###> symfony/framework-bundle ###
+/backend/.env
+/backend/var/
+/backend/vendor/
+.env
+.env.dev
 /.env.local
 /.env.local.php
 /.env.*.local
 /config/secrets/prod/prod.decrypt.private.php
 /public/bundles/
-/var/
-/vendor/
 ###< symfony/framework-bundle ###
+
+.DS_Store
+frontend/node_modules/
+
+# React Router
+frontend/.react-router/
+frontend/build/
