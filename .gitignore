@@ -1,21 +1,20 @@
- .idea/
+.idea/
 
 ###> symfony/framework-bundle ###
 /backend/.env.local
 /backend/var/
 /backend/vendor/
-.env
-.env.dev
 /.env.local
 /.env.local.php
 /.env.*.local
-/config/secrets/prod/prod.decrypt.private.php
-/public/bundles/
+/backend/config/secrets/prod/prod.decrypt.private.php
+/backend/public/bundles/
 ###< symfony/framework-bundle ###
+
+# Кореневі .env — залишок від `symfony new` у корені (compose має :- fallback-и,
+# реальні секрети тримаємо в .env.local, який не комітиться).
+/.env
+/.env.dev
 
 .DS_Store
 frontend/node_modules/
-
-# React Router
-frontend/.react-router/
-frontend/build/
